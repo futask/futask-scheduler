@@ -1,5 +1,6 @@
 type EnvKey =
   'APP_MONGODB_URI' |
+  'CURRENT_TIME_ACCEPTED_SECOND' |
   'MONGODB_COLLECTION_PREFIX';
 
 export const getEnv = (name: EnvKey): string => {

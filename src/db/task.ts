@@ -24,5 +24,21 @@ export const insertMany = (tasks: Partial<Task>[]) => collection.insertMany(task
 
 export const update = (id: string, task: Partial<Task>[]) => collection.findByIdAndUpdate(id, task);
 
-export const deleteMany = (ids: string[]) => collection.deleteMany({ _id: { $in: ids }}).then(res => res.deletedCount);
+export const updateManyById = (ids: string[], task: Partial<Task>) =>
+  collection.updateMany({ _id: { $in: ids } }, task);
+
+export const deleteManyById = (ids: string[]) => collection.deleteMany({ _id: { $in: ids }}).then(res => res.deletedCount);
+
+export const markCompleted = (processId: string) => collection.deleteMany({ _processingId: processId }).then(res => res.deletedCount);
+
+export const find = (condition: Partial<Task>, options?: { fields: (keyof Task)[] }) =>
+  collection.find(condition, options?.fields)
+  .lean();
+
+export const findAvailable = (period: { from: number, to: number }, options?: { fields: (keyof Task)[] }) =>
+  collection.find({
+    _processingId: { $exists: false },
+    triggerAt: { $gte: period.from, $lte: period.to }
+  }, options?.fields)
+  .lean();
 

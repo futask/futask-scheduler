@@ -3,6 +3,7 @@ import { attachResponseData } from './utils/response';
 import * as TaskCollection from '../db/task';
 import AppError from '../helpers/error';
 import logger from '../helpers/logger';
+import { getConsumptionTasks } from '../lib/task';
 
 export const createTasks = (req: Request, res: Response, next: NextFunction) => {
   const { tasks } = req.body;
@@ -34,7 +35,7 @@ export const updateTask = async (req: Request, _: Response, next: NextFunction) 
 
 export const deleteTasks = async (req: Request, res: Response, next: NextFunction) => {
   const { ids } = req.body;
-  TaskCollection.deleteMany(ids)
+  TaskCollection.deleteManyById(ids)
     .then((deletedCount) => {
       // TODO:later notify deleted amount
       logger.info('✅ Deleted amount %o', deletedCount);
@@ -45,6 +46,32 @@ export const deleteTasks = async (req: Request, res: Response, next: NextFunctio
       logger.error('🛑 delete tasks failed, err: %o, ids: %o', err.message, ids);
       next(AppError.badRequest());
     });
+};
 
+export const getConsumeTasks = async (req: Request, res: Response, next: NextFunction) => {
+  const { amount } = req.body;
+  const DEFAULT_CUNSUMPTION_AMOUNT = 500;
+  getConsumptionTasks(amount || DEFAULT_CUNSUMPTION_AMOUNT)
+    .then((tasksData) => {
+      attachResponseData(res, tasksData)
+      next();
+    })
+    .catch(err => {
+      logger.error('🛑 delete tasks failed, err: %o, ids: %o', err.message);
+      next(AppError.badRequest());
+    });
+};
 
+export const flagConsumptionSuccess = async (req: Request, res: Response, next: NextFunction) => {
+  const { processId } = req.body;
+
+  TaskCollection.markCompleted(processId)
+    .then(count => {
+      // TODO:later notify count to metric server
+      next();
+    })
+    .catch(err => {
+      logger.error('🛑 delete tasks failed, err: %o, ids: %o', err.message);
+      next(AppError.badRequest());
+    });
 };
