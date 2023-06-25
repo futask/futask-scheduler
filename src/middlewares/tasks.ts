@@ -53,7 +53,7 @@ export const getConsumeTasks = async (req: Request, res: Response, next: NextFun
   const DEFAULT_CUNSUMPTION_AMOUNT = 500;
   getConsumptionTasks(amount || DEFAULT_CUNSUMPTION_AMOUNT)
     .then((tasksData) => {
-      attachResponseData(res, tasksData)
+      attachResponseData(res, tasksData.tasks.length ? tasksData : {});
       next();
     })
     .catch(err => {

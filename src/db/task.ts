@@ -35,10 +35,14 @@ export const find = (condition: Partial<Task>, options?: { fields: (keyof Task)[
   collection.find(condition, options?.fields)
   .lean();
 
-export const findAvailable = (period: { from: number, to: number }, options?: { fields: (keyof Task)[] }) =>
-  collection.find({
-    _processingId: { $exists: false },
-    triggerAt: { $gte: period.from, $lte: period.to }
-  }, options?.fields)
-  .lean();
+export const findAvailable = (period: { from: number, to: number }, limit: number, options?: { fields: (keyof Task)[] }) =>
+  collection.find(
+    {
+      _processingId: { $exists: false },
+      triggerAt: { $gte: period.from, $lte: period.to }
+    },
+    options?.fields
+  )
+    .limit(limit)
+    .lean();
 

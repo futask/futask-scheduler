@@ -6,7 +6,7 @@ import uuid from '../helpers/uuid';
 const flagProcessingTasks = async (processId: string, amount: number) => {
   const currentTimeAccepted = +(getEnv('CURRENT_TIME_ACCEPTED_SECOND') || 60) * 1000;
   const now = nowMs();
-  const tasks = await TaskCollection.findAvailable({ from: now - currentTimeAccepted, to: now }, { fields: ['_id'] });
+  const tasks = await TaskCollection.findAvailable({ from: now - currentTimeAccepted, to: now }, amount, { fields: ['_id'] });
 
   return TaskCollection.updateManyById(tasks.map(t => t._id), { _processingId: processId, _processingAt: now });
 }
