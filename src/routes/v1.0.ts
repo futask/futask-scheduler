@@ -1,14 +1,8 @@
 import { Router } from 'express';
-import {
-  createTasks,
-  deleteTasks,
-  updateTask
-} from '../middlewares/tasks'
+import managementRouter from './management';
 
 const router = Router();
 
-router.post('/tasks', createTasks);
-router.patch('/tasks/:id', updateTask);
-router.post('/tasks/delete', deleteTasks);
+router.use('/managements', managementRouter);
 
 export default router;
