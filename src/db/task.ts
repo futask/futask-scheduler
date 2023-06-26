@@ -2,6 +2,8 @@ import { Schema, model } from 'mongoose';
 import { getCollectionName } from './utils/collection';
 import Task from '../models/sample';
 import { ID_DEFINITION } from './utils/schema';
+import { getEnvNumber } from '../helpers/system';
+import { nowMs } from '../helpers/datetime';
 
 const TaskSchema = new Schema<Task>({
   _id: ID_DEFINITION,
@@ -11,7 +13,7 @@ const TaskSchema = new Schema<Task>({
   createdAt: Number,
   updatedAt: Number,
 
-  _processingAt: Number,
+  _processingAt: { type: Number, default: 0, required: true },
   _processingId: String
 }, {
   versionKey: false,
@@ -35,14 +37,15 @@ export const find = (condition: Partial<Task>, options?: { fields: (keyof Task)[
   collection.find(condition, options?.fields)
   .lean();
 
-export const findAvailable = (period: { from: number, to: number }, limit: number, options?: { fields: (keyof Task)[] }) =>
+export const findAvailable = (limit: number, options?: { fields: (keyof Task)[] }) =>
   collection.find(
     {
-      _processingId: { $exists: false },
-      triggerAt: { $gte: period.from, $lte: period.to }
+      $or: [
+        { _processingId: { $exists: false } },
+        { _processingAt: { $lt: nowMs() - getEnvNumber('OVERDUE_PROCESSING_MS') } }
+      ]
     },
     options?.fields
-  )
+  ).sort({ triggerAt: 1 })
     .limit(limit)
     .lean();
-

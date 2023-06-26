@@ -1,6 +1,12 @@
 type EnvKey =
+  // system report env
+  'PROCESSED_TASK_COUNT' |
+  'ADDED_TASK_COUNT' |
+  'DELETED_TASK_COUNT' |
+
+  'PORT' |
   'APP_MONGODB_URI' |
-  'CURRENT_TIME_ACCEPTED_SECOND' |
+  'OVERDUE_PROCESSING_MS' |
   'MONGODB_COLLECTION_PREFIX';
 
 export const getEnv = (name: EnvKey): string => {
@@ -11,3 +17,13 @@ export const getEnv = (name: EnvKey): string => {
 
   return value || '';
 };
+
+export const setEnv = (name: EnvKey, value: string) => {
+  process.env[name] = value;
+};
+
+export const getEnvNumber = (name: EnvKey) => Number(getEnv(name) || 0);
+
+export const setEnvNumber = (name: EnvKey, value: number) => setEnv(name, String(value || 0));
+
+export const incEnv = (name: EnvKey, count: number) => setEnvNumber(name, getEnvNumber(name) + (count || 0));

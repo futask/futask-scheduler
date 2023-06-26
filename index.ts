@@ -2,13 +2,12 @@ import express, { Express, NextFunction, Request, Response } from 'express';
 import appRouter from './src/routes';
 import dotenv from 'dotenv';
 import { connect } from 'mongoose';
-import { getEnv } from './src/helpers/system';
+import { getEnv, getEnvNumber } from './src/helpers/system';
 import logger from './src/helpers/logger';
-
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = getEnvNumber('PORT') || 3000;
 
 // connect mongodb
 connect(getEnv('APP_MONGODB_URI')).catch(err => {
