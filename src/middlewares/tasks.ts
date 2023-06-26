@@ -4,6 +4,7 @@ import * as TaskCollection from '../db/task';
 import AppError from '../helpers/error';
 import logger from '../helpers/logger';
 import { getConsumptionTasks } from '../lib/task';
+import { notifyAddedTasks, notifyDeletedTasks, notifyProcessedTasks } from '../lib/report';
 
 export const createTasks = (req: Request, res: Response, next: NextFunction) => {
   const { tasks } = req.body;
@@ -12,8 +13,7 @@ export const createTasks = (req: Request, res: Response, next: NextFunction) => 
   }
 
   TaskCollection.insertMany(tasks).then(ts => {
-    // TODO::later notify added tasks
-    logger.info('✅ Added %o', ts.length)
+    notifyAddedTasks(ts.length);
     attachResponseData(res, { tasks: ts });
     next();
   }).catch(err => {
@@ -37,9 +37,7 @@ export const deleteTasks = async (req: Request, res: Response, next: NextFunctio
   const { ids } = req.body;
   TaskCollection.deleteManyById(ids)
     .then((deletedCount) => {
-      // TODO:later notify deleted amount
-      logger.info('✅ Deleted amount %o', deletedCount);
-
+      notifyDeletedTasks(deletedCount);
       next();
     })
     .catch(err => {
@@ -67,7 +65,7 @@ export const flagConsumptionSuccess = async (req: Request, res: Response, next: 
 
   TaskCollection.markCompleted(processId)
     .then(count => {
-      // TODO:later notify count to metric server
+      notifyProcessedTasks(count);
       next();
     })
     .catch(err => {
