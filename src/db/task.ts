@@ -8,13 +8,13 @@ import { nowMs } from '../helpers/datetime';
 const TaskSchema = new Schema<Task>({
   _id: ID_DEFINITION,
   payload: Object,
-  triggerAt: Number,
+  triggerAt: { type: Number, index: true },
 
   createdAt: Number,
   updatedAt: Number,
 
-  _processingAt: { type: Number, default: 0, required: true },
-  _processingId: String
+  _processingAt: { type: Number, default: 0, index: true },
+  _processingId: { type: String, index: true }
 }, {
   versionKey: false,
   timestamps: true
