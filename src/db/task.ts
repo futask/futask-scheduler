@@ -48,7 +48,8 @@ export const findAvailable = (limit: number, options?: { fields: (keyof Task)[] 
       $or: [
         { _processingId: { $exists: false } },
         { _processingAt: { $lt: nowMs() - getEnvNumber('OVERDUE_PROCESSING_MS') } }
-      ]
+      ],
+      triggerAt: { $lte: nowMs() }
     },
     options?.fields
   ).sort({ triggerAt: 1 })

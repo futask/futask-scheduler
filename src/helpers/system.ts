@@ -11,7 +11,8 @@ type EnvKey =
 
 export const getEnv = (name: EnvKey): string => {
   const value = process.env[name];
-  if (!value) {
+
+  if (!value && process.env.APP_ENV === 'development') {
     console.log(`🔥 DBG::Missing env ${name}`);
   }
 
