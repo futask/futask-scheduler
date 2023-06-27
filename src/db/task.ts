@@ -31,6 +31,11 @@ export const updateManyById = (ids: string[], task: Partial<Task>) =>
 
 export const deleteManyById = (ids: string[]) => collection.deleteMany({ _id: { $in: ids }}).then(res => res.deletedCount);
 
+export const markFailed = (ids: string[]) => collection.updateMany(
+  { _id: { $in: ids } },
+  { $unset: { _processingAt: null, _processingId: null }
+}).exec();
+
 export const markCompleted = (processId: string) => collection.deleteMany({ _processingId: processId }).then(res => res.deletedCount);
 
 export const find = (condition: Partial<Task>, options?: { fields: (keyof Task)[] }) =>

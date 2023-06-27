@@ -61,7 +61,11 @@ export const getConsumeTasks = async (req: Request, res: Response, next: NextFun
 };
 
 export const flagConsumptionSuccess = async (req: Request, res: Response, next: NextFunction) => {
-  const { processId } = req.body;
+  const { processId, failureIds } = req.body;
+
+  if (failureIds?.length) {
+    await TaskCollection.markFailed(failureIds);
+  }
 
   TaskCollection.markCompleted(processId)
     .then(count => {
