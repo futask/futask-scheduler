@@ -3,8 +3,7 @@ import { attachResponseData } from './utils/response';
 import * as TaskCollection from '../db/task';
 import AppError from '../helpers/error';
 import logger from '../helpers/logger';
-import { getConsumptionTasks } from '../lib/task';
-import { notifyAddedTasks, notifyDeletedTasks, notifyProcessedTasks } from '../lib/report';
+import { notifyAddedTasks, notifyDeletedTasks } from '../lib/report';
 
 export const createTasks = (req: Request, res: Response, next: NextFunction) => {
   const { tasks } = req.body;
@@ -42,38 +41,6 @@ export const deleteTasks = async (req: Request, res: Response, next: NextFunctio
     })
     .catch(err => {
       logger.error('🛑 delete tasks failed, err: %o, ids: %o', err.message, ids);
-      next(AppError.badRequest());
-    });
-};
-
-export const getConsumeTasks = async (req: Request, res: Response, next: NextFunction) => {
-  const { amount } = req.body;
-  const DEFAULT_CUNSUMPTION_AMOUNT = 500;
-  getConsumptionTasks(amount || DEFAULT_CUNSUMPTION_AMOUNT)
-    .then((tasksData) => {
-      attachResponseData(res, tasksData.tasks.length ? tasksData : {});
-      next();
-    })
-    .catch(err => {
-      logger.error('🛑 delete tasks failed, err: %o, ids: %o', err.message);
-      next(AppError.badRequest());
-    });
-};
-
-export const flagConsumptionSuccess = async (req: Request, res: Response, next: NextFunction) => {
-  const { processId, failureIds } = req.body;
-
-  if (failureIds?.length) {
-    await TaskCollection.markFailed(failureIds);
-  }
-
-  TaskCollection.markCompleted(processId)
-    .then(count => {
-      notifyProcessedTasks(count);
-      next();
-    })
-    .catch(err => {
-      logger.error('🛑 delete tasks failed, err: %o, ids: %o', err.message);
       next(AppError.badRequest());
     });
 };

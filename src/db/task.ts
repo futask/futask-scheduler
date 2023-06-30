@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { getCollectionName } from './utils/collection';
-import Task from '../models/sample';
+import Task from '../models/task';
 import { ID_DEFINITION } from './utils/schema';
 import { getEnvNumber } from '../helpers/system';
 import { nowMs } from '../helpers/datetime';

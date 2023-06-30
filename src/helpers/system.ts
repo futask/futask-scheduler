@@ -6,8 +6,7 @@ type EnvKey =
 
   'PORT' |
   'APP_MONGODB_URI' |
-  'OVERDUE_PROCESSING_MS' |
-  'MONGODB_COLLECTION_PREFIX';
+  'OVERDUE_PROCESSING_MS';
 
 export const getEnv = (name: EnvKey): string => {
   const value = process.env[name];
