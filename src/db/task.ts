@@ -8,7 +8,7 @@ import { nowMs } from '../helpers/datetime';
 const TaskSchema = new Schema<Task>({
   _id: ID_DEFINITION,
   payload: Object,
-  triggerAt: { type: Number, index: true },
+  triggerAt: { type: Number, index: true, default: () => nowMs() },
 
   createdAt: Number,
   updatedAt: Number,
